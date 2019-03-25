@@ -1,0 +1,17 @@
+/* Files */
+
+/* ===============  ST =============== */
+- stm32f407xx.h
+- stm32f4xx.h
+Header files with device specific informations, such as interrupt numbers, 
+data structures and address mapping for device specific peripherals.
+
+stm32f4xx_hal_conf.h
+Header files with definition of clock variables and selectors for peripherals includes.
+
+/* ================ ARM ============== */
+- core_cm4.h
+Header file, which defines the core peripherals and provides helper functions 
+to access the core registers (SysTick, NVIC, etc.)
+
+
