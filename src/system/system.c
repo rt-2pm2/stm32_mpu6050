@@ -11,10 +11,10 @@
 #include "main.h"
 
 /*!< Uncomment the following line if you need to relocate your vector Table in
-     Internal SRAM. */
+  Internal SRAM. */
 /* #define VECT_TAB_SRAM */
 #define VECT_TAB_OFFSET  0x00 /*!< Vector Table base offset field. 
-                                   This value must be a multiple of 0x200. */
+				This value must be a multiple of 0x200. */
 
 uint32_t SystemCoreClock = 16000000;
 
@@ -139,104 +139,104 @@ void SystemCoreClockUpdate(void) {
 
 
 /**
-  * @brief  System Clock Configuration
-  *         The system Clock is configured as follow : 
-  *            System Clock source            = PLL (HSE)
-  *            SYSCLK(Hz)                     = 168000000
-  *            HCLK(Hz)                       = 168000000
-  *            AHB Prescaler                  = 1
-  *            APB1 Prescaler                 = 4
-  *            APB2 Prescaler                 = 2
-  *            HSE Frequency(Hz)              = 8000000
-  *            PLL_M                          = 8
-  *            PLL_N                          = 336
-  *            PLL_P                          = 2
-  *            PLL_Q                          = 7
-  *            VDD(V)                         = 3.3
-  *            Main regulator output voltage  = Scale1 mode
-  *            Flash Latency(WS)              = 5
-  * @param  None
-  * @retval None
-  */
+ * @brief  System Clock Configuration
+ *         The system Clock is configured as follow : 
+ *            System Clock source            = PLL (HSE)
+ *            SYSCLK(Hz)                     = 168000000
+ *            HCLK(Hz)                       = 168000000
+ *            AHB Prescaler                  = 1
+ *            APB1 Prescaler                 = 4
+ *            APB2 Prescaler                 = 2
+ *            HSE Frequency(Hz)              = 8000000
+ *            PLL_M                          = 8
+ *            PLL_N                          = 336
+ *            PLL_P                          = 2
+ *            PLL_Q                          = 7
+ *            VDD(V)                         = 3.3
+ *            Main regulator output voltage  = Scale1 mode
+ *            Flash Latency(WS)              = 5
+ * @param  None
+ * @retval None
+ */
 void SetSysClock(void) {
-  RCC_ClkInitTypeDef RCC_ClkInitStruct;
-  RCC_OscInitTypeDef RCC_OscInitStruct;
+	RCC_ClkInitTypeDef RCC_ClkInitStruct;
+	RCC_OscInitTypeDef RCC_OscInitStruct;
 
-  /* Enable Power Control clock */
-  __HAL_RCC_PWR_CLK_ENABLE();
-  
-  /* The voltage scaling allows optimizing the power consumption when the device is 
-     clocked below the maximum system frequency, to update the voltage scaling value 
-     regarding system frequency refer to product datasheet.  */
-  __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE1);
-  
-  /* Enable HSE Oscillator and activate PLL with HSE as source */
-  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE;
-  RCC_OscInitStruct.HSEState = RCC_HSE_ON;
-  RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
-  RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
-  RCC_OscInitStruct.PLL.PLLM = 8;
-  RCC_OscInitStruct.PLL.PLLN = 336;
-  RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV2;
-  RCC_OscInitStruct.PLL.PLLQ = 7;
-  HAL_RCC_OscConfig(&RCC_OscInitStruct);
-  
-  /* Select PLL as system clock source and configure the HCLK, PCLK1 and PCLK2 
-     clocks dividers */
-  RCC_ClkInitStruct.ClockType = (RCC_CLOCKTYPE_SYSCLK | 
-		  RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_PCLK1 | 
-		  RCC_CLOCKTYPE_PCLK2);
-  RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
-  RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
-  RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV4;  
-  RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV2;  
-  HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_5);
+	/* Enable Power Control clock */
+	__HAL_RCC_PWR_CLK_ENABLE();
 
-  /* STM32F405x/407x/415x/417x Revision Z devices: prefetch is supported  */
-  if (HAL_GetREVID() == 0x1001)
-  {
-    /* Enable the Flash prefetch */
-    __HAL_FLASH_PREFETCH_BUFFER_ENABLE();
-  }
+	/* The voltage scaling allows optimizing the power consumption when the device is 
+	   clocked below the maximum system frequency, to update the voltage scaling value 
+	   regarding system frequency refer to product datasheet.  */
+	__HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE1);
+
+	/* Enable HSE Oscillator and activate PLL with HSE as source */
+	RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE;
+	RCC_OscInitStruct.HSEState = RCC_HSE_ON;
+	RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
+	RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
+	RCC_OscInitStruct.PLL.PLLM = 8;
+	RCC_OscInitStruct.PLL.PLLN = 336;
+	RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV2;
+	RCC_OscInitStruct.PLL.PLLQ = 7;
+	HAL_RCC_OscConfig(&RCC_OscInitStruct);
+
+	/* Select PLL as system clock source and configure the HCLK, PCLK1 and PCLK2 
+	   clocks dividers */
+	RCC_ClkInitStruct.ClockType = (RCC_CLOCKTYPE_SYSCLK | 
+			RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_PCLK1 | 
+			RCC_CLOCKTYPE_PCLK2);
+	RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
+	RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
+	RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV4;  
+	RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV2;  
+	HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_5);
+
+	/* STM32F405x/407x/415x/417x Revision Z devices: prefetch is supported  */
+	if (HAL_GetREVID() == 0x1001)
+	{
+		/* Enable the Flash prefetch */
+		__HAL_FLASH_PREFETCH_BUFFER_ENABLE();
+	}
 }
 
 
 /**
-  * @brief  Configures EXTI Line0 (connected to PA4 pin) in interrupt mode
-  * @param  None
-  * @retval None
-  */
+ * @brief  Configures EXTI Line0 (connected to PA4 pin) in interrupt mode
+ * @param  None
+ * @retval None
+ */
 void EXTILine4_Config(void) {
-  GPIO_InitTypeDef   GPIO_InitStructure;
+	GPIO_InitTypeDef   GPIO_InitStructure;
 
-  /* Enable GPIOA clock */
-  __HAL_RCC_GPIOA_CLK_ENABLE();
-  
-  /* Configure PA4 pin as input floating */
-  GPIO_InitStructure.Mode = GPIO_MODE_IT_FALLING;
-  GPIO_InitStructure.Pull = GPIO_NOPULL;
-  GPIO_InitStructure.Pin = INT_MPU_PIN;
-  HAL_GPIO_Init(GPIOA, &GPIO_InitStructure);
+	/* Enable GPIOA clock */
+	__HAL_RCC_GPIOA_CLK_ENABLE();
 
-  /* Enable and set EXTI Line0 Interrupt to the lowest priority */
-  HAL_NVIC_SetPriority(EXTI4_IRQn, 0, 0);
-  HAL_NVIC_EnableIRQ(EXTI4_IRQn);
+	/* Configure PA4 pin as input floating */
+	GPIO_InitStructure.Mode = GPIO_MODE_IT_FALLING;
+	GPIO_InitStructure.Pull = GPIO_NOPULL;
+	GPIO_InitStructure.Pin = INT_MPU_PIN;
+	HAL_GPIO_Init(GPIOA, &GPIO_InitStructure);
+
+	/* Enable and set EXTI Line0 Interrupt to the lowest priority */
+	HAL_NVIC_SetPriority(EXTI4_IRQn, 0, 0);
+	HAL_NVIC_EnableIRQ(EXTI4_IRQn);
 }
 
 
 /**
-  * @brief Set up the UART interface
-  * UART1 configured as follow:
-  * - Word Length = 8 Bits
-  * - Stop Bit = One Stop bit
-  * - Parity = None 
-  * - BaudRate = 9600 baud
-  * - Hardware flow control disabled (RTS and CTS signals) 
-  *
-  * @param  UartHandle Handle to the UART interface
-  * @retval Status of the HAL 
-  *
-  */
+ * @brief Set up the UART interface
+ * UART1 configured as follow:
+ * - Word Length = 8 Bits
+ * - Stop Bit = One Stop bit
+ * - Parity = None 
+ * - BaudRate = 9600 baud
+ * - Hardware flow control disabled (RTS and CTS signals) 
+ *
+ * @param  UartHandle Handle to the UART interface
+ * @retval Status of the HAL 
+ *
+ */
 HAL_StatusTypeDef StartUART(UART_HandleTypeDef* UartHandle) { 
 
 	HAL_StatusTypeDef ret;
@@ -259,12 +259,12 @@ HAL_StatusTypeDef StartUART(UART_HandleTypeDef* UartHandle) {
 
 
 /**
-  * @brief Set up the I2C interface
-  *
-  * @param  I2cHandle Handle to the i2c structure
-  * @retval Status of the HAL 
-  *
-  */
+ * @brief Set up the I2C interface
+ *
+ * @param  I2cHandle Handle to the i2c structure
+ * @retval Status of the HAL 
+ *
+ */
 
 HAL_StatusTypeDef StartI2C(I2C_HandleTypeDef* I2cHandle) {
 	HAL_StatusTypeDef ret;
@@ -281,6 +281,57 @@ HAL_StatusTypeDef StartI2C(I2C_HandleTypeDef* I2cHandle) {
 	I2cHandle->Init.OwnAddress2     = 0xFE;
 
 	ret = HAL_I2C_Init(I2cHandle);
+
+	return ret;
+}
+
+
+/**
+ * @brief Configure the TIM peripheral
+ *
+ * @note In this example TIM2 input clock (TIM2CLK) is set to 2 * APB1 clock (PCLK1), 
+ * since APB1 prescaler is different from 1. 
+ * TIM2CLK = 2 * PCLK1
+ * PCLK1 = HCLK / 4 
+ * Thus, TIM2CLK = HCLK / 2 = SystemCoreClock /2
+ *
+ * Wanting the TIM3 counter clock at 1 MHz, the Prescaler is computed as following:
+ Prescaler = (TIM3CLK / TIM3 counter clock) - 1
+ Prescaler = ((SystemCoreClock /2) /1 MHz) - 1
+
+Note: 
+SystemCoreClock variable holds HCLK frequency and is defined in system_stm32f4xx.c file.
+Each time the core clock (HCLK) changes, user had to update SystemCoreClock 
+variable value. Otherwise, any configuration based on this variable will be incorrect.
+This variable is updated in three ways:
+1) by calling CMSIS function SystemCoreClockUpdate()
+2) by calling HAL API function HAL_RCC_GetSysClockFreq()
+3) each time HAL_RCC_ClockConfig() is called to configure the system clock frequency  
+----------------------------------------------------------------------- */  
+HAL_StatusTypeDef StartTIM(TIM_HandleTypeDef* TimHandle) {
+	HAL_StatusTypeDef ret;
+
+	/* Compute the prescaler value to have TIM3 counter clock equal to 1 MHz */
+	uint32_t uwPrescalerValue = (uint32_t) ((SystemCoreClock /2) / 1000000) - 1;
+
+	/* Set TIMx instance */
+	TimHandle->Instance = TIM2;
+
+	TimHandle->Init.Period =  0xFFFFFFFF- 1;
+	TimHandle->Init.Prescaler = uwPrescalerValue;
+	TimHandle->Init.ClockDivision = 0;
+	TimHandle->Init.CounterMode = TIM_COUNTERMODE_UP;
+
+	ret = HAL_TIM_Base_Init(TimHandle);
+	if (ret != HAL_OK) {
+		return ret;
+	}
+
+	__HAL_TIM_SetCounter(TimHandle, 0);
+
+	/*##-2- Start the TIM Base generation in interrupt mode ####################*/
+	/* Start Channel1 */
+	ret = HAL_TIM_Base_Start_IT(TimHandle);
 
 	return ret;
 }
