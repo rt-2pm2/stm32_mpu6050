@@ -1,7 +1,7 @@
 # Makefile for the project 
 #
 #
-.PHONY: list clear assemble flash
+.PHONY: list clear flash
 
 CC = arm-none-eabi-gcc
 CC_OPTIONS = -g -O0
@@ -30,7 +30,8 @@ core_src_files_o := $(patsubst %.c, %.o, $(core_src_files))
 hal_src_files := stm32f4xx_hal.c stm32f4xx_hal_flash.c \
  stm32f4xx_hal_flash_ex.c stm32f4xx_hal_flash_ramfunc.c \
  stm32f4xx_hal_cortex.c stm32f4xx_hal_i2c.c stm32f4xx_hal_dma.c \
- stm32f4xx_hal_gpio.c stm32f4xx_hal_rcc.c stm32f4xx_hal_uart.c
+ stm32f4xx_hal_gpio.c stm32f4xx_hal_rcc.c stm32f4xx_hal_uart.c \
+ stm32f4xx_hal_tim.c stm32f4xx_hal_tim_ex.c
 hal_src_files_o := $(patsubst %.c, %.o, $(hal_src_files))
 
 dev_src_files := $(wildcard $(src_dev)/*.c)
@@ -67,7 +68,6 @@ link_script = $(wildcard $(src_core)/*.ld)
 
 all: main.hex
 
-assemble: main.hex 
 
 main.hex: main.elf
 	arm-none-eabi-objcopy -Oihex $< $@
@@ -78,45 +78,69 @@ main.elf: $(objfiles) $(hal_src_files_o)
 	$(eval hal_built := $(foreach file, $(hal_src_files_o), ./build/hal/$(file)))
 	$(CC) -mcpu=cortex-m4 -mlittle-endian -mthumb -DSTM32F407xx \
 		-T$(link_script) -Wl,--gc-sections $(CC_OPTIONS)\
-		$(objfiles) $(hal_built)\
-		-o $@
-	@echo " ========= Done Compiling " $@ " ========= "
+		$(objfiles) $(hal_built) -o $@
+	@if [ $$? -eq 0 ]; then \
+		echo " ========= Done Compiling " $@ " ========= "; \
+	else \
+		echo " ========= Error Compiling " $@ " ========= "; \
+	fi
 
 $(app_src_files_o): %.o: %.c 
 	@echo -e " \n ========= Compiling " $@ " ========= "
 	$(CC) -Wall -mcpu=cortex-m4 -mlittle-endian -mthumb $(CC_OPTIONS)\
 		$(core_inc_d_I) -DSTM32F407xx -c $< -o $@
-	@echo " ========= Done Compiling " $@ " ========= "
-
+	@if [ $$? -eq 0 ]; then \
+		echo " ========= Done Compiling " $@ " ========= "; \
+	else \
+		echo " ========= Error Compiling " $@ " ========= "; \
+	fi
 
 $(core_src_files_o): %.o: %.c 
 	@echo -e " \n ========= Compiling " $@ " ========= "
 	$(CC) -Wall -mcpu=cortex-m4 -mlittle-endian -mthumb $(CC_OPTIONS)\
 		$(core_inc_d_I) -DSTM32F407xx -c $< -o $@
-	@echo " ========= Done Compiling " $@ " ========= "
+	@if [ $$? -eq 0 ]; then \
+		echo " ========= Done Compiling " $@ " ========= "; \
+	else \
+		echo " ========= Error Compiling " $@ " ========= "; \
+	fi
 
 $(hal_src_files_o): %.o : ./include/STM32F4xx_HAL_Driver/Src/%.c
 	@echo -e " \n ========= Compiling " $@ " ========= "
 	$(CC) -Wall -mcpu=cortex-m4 -mlittle-endian -mthumb $(CC_OPTIONS)\
 		$(core_inc_d_I) -DSTM32F407xx -c $< \
-		-o ./build/hal/$@
-	@echo " ========= Done Compiling " $@ " ========= "
+		-o ./build/hal/$@ 
+	@if [ $$? -eq 0 ]; then \
+		echo " ========= Done Compiling " $@ " ========= "; \
+	else \
+		echo " ========= Error Compiling " $@ " ========= "; \
+	fi
 
 $(dev_src_files_o): %.o: %.c 
 	@echo -e " \n ========= Compiling " $@ " ========= "
 	$(CC) -Wall -mcpu=cortex-m4 -mlittle-endian -mthumb $(CC_OPTIONS)\
 		$(core_inc_d_I) -DSTM32F407xx -c $< -o $@
-	@echo " ========= Done Compiling " $@ " ========= "
+	@if [ $$? -eq 0 ]; then \
+		echo " ========= Done Compiling " $@ " ========= "; \
+	else \
+		echo " ========= Error Compiling " $@ " ========= "; \
+	fi
+
 
 
 $(startup_o): %.o: %.s 
 	@echo -e " \n ========= Compiling " $@ " ========= "
 	$(CC) -Wall -mcpu=cortex-m4 -mlittle-endian -mthumb $(CC_OPTIONS)\
 		$(core_inc_d_I) -DSTM32F407xx -c $< -o $@
-	@echo " ========= Done Compiling " $@ " ========= "
+	@if [ $$? -eq 0 ]; then \
+		echo " ========= Done Compiling " $@ " ========= "; \
+	else \
+		echo " ========= Error Compiling " $@ " ========= "; \
+	fi
 
 flash: main.elf
-	$(shell openocd -f ~/usr/openocd/tcl/board/stm32f429discovery.cfg -c "program main.elf verify reset exit")
+	$(shell openocd -f ~/usr/openocd/tcl/board/stm32f429discovery.cfg -c \
+		"program main.elf verify reset exit")
 
 
 list: 
