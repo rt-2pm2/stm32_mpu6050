@@ -66,6 +66,9 @@ void DMA1_Stream2_IRQHandler(void);
 void EXTI4_IRQHandler(void);
 
 void USARTx_IRQHandler(void);
+
+void TIM2_IRQHandler(void);
+
 #ifdef __cplusplus
 }
 #endif

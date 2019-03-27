@@ -56,6 +56,8 @@ extern I2C_HandleTypeDef I2cHandle;
 /* UART handler declared in "main.c" file */
 extern UART_HandleTypeDef UartHandle;
 
+/* Timer handler declared in "main.c" file */
+extern TIM_HandleTypeDef TimHandle;
 
 /* Private function prototypes -----------------------------------------------*/
 /* Private functions ---------------------------------------------------------*/
@@ -221,6 +223,17 @@ void EXTI4_IRQHandler(void) {
   HAL_GPIO_EXTI_IRQHandler(INT_MPU_PIN);
 }
 
+
+
+/**
+  * @brief  This function handles TIM interrupt request.
+  * @param  None
+  * @retval None
+  */
+void TIM2_IRQHandler(void)
+{
+  HAL_TIM_IRQHandler(&TimHandle);
+}
 
 /**
   * @brief  This function handles PPP interrupt request.
