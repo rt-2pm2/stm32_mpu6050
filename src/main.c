@@ -16,6 +16,9 @@ I2C_HandleTypeDef I2cHandle;
 /* UART handler declaration */
 UART_HandleTypeDef UartHandle;
 
+/* TIM handler declaration */
+TIM_HandleTypeDef TimHandle;
+
 /* MPU Data structure */
 MPU6050_data_str mpu_data;
 
@@ -102,6 +105,13 @@ int main() {
 		Error_Handler();    
 	}
 
+	// ## Configure the TIM peripheral ######################################
+	halStatus = StartTIM(&TimHandle);
+	if (halStatus != HAL_OK) {
+		Error_Handler();
+	}
+
+
 	// Initialize the mpu6050
 	MPU6050_Init(&mpu_data, MPU6050_Accelerometer_2G, MPU6050_Gyroscope_250s);
 
@@ -109,13 +119,15 @@ int main() {
 	EXTILine4_Config();
 
 	int digs = 0;
+	uint32_t t;
 	while (1) { 
 	
 		HAL_Delay(20);
 
 		
+		t = __HAL_TIM_GetCounter(&TimHandle);
 		readflag = 0;
-		digs = float2buff(acc[2], data_buff, 20, 3, 3);
+		digs = float2buff(t, data_buff, 20, 8, 3);
 		readflag = 1;
 		tr_status = HAL_UART_Transmit_IT(&UartHandle, (uint8_t*)data_buff, digs);
 		
@@ -136,6 +148,17 @@ void Error_Handler(void) {
 
 
 // ===================== Callbacks ========================
+/**
+  * @brief  Period elapsed callback in non blocking mode
+  * @param  htim: TIM handle
+  * @retval None
+  */
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
+{ 
+	return;
+}
+
+
 
 void HAL_I2C_ErrorCallback(I2C_HandleTypeDef* hi2c) {
 	Error_Handler();	
