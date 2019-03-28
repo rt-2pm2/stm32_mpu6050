@@ -180,9 +180,9 @@ typedef struct {
 
 /**
  * @brief  Initializes MPU6050 and I2C peripheral
- * @param  *DataStruct: Pointer to empty @ref MPU6050_data_str structure
- * @param  AccelerometerSensitivity: Set accelerometer sensitivity. 
- * @param  GyroscopeSensitivity: Set gyroscope sensitivity.
+ * @param  DataStruct Pointer to empty @ref MPU6050_data_str structure
+ * @param  AccelerometerRange Set accelerometer sensitivity. 
+ * @param  GyroscopeRange Set gyroscope sensitivity.
  * @retval MPU6050_Status_t
  */
 MPU6050_Status_t MPU6050_Init(MPU6050_data_str* data_str,
@@ -191,14 +191,14 @@ MPU6050_Status_t MPU6050_Init(MPU6050_data_str* data_str,
 
 /**
  * @brief  Requests accelerometer data from sensor
- * @param  *DataStruct: Pointer to @ref MPU6050_data_str structure to store data to
+ * @param  DataStruct: Pointer to @ref MPU6050_data_str structure to store data to
  * @retval MPU6050_Status_t
  */
 MPU6050_Status_t MPU6050_ReqAccelerometer(MPU6050_data_str* DataStruct);
 
 /**
  * @brief  Requests gyroscope data from sensor
- * @param  *DataStruct: Pointer to @ref MPU6050_data_str structure to store data to
+ * @param  DataStruct: Pointer to @ref MPU6050_data_str structure to store data to
  * @param  timestamp timestamp of the sensor data
  * @retval MPU6050_Status_t
  */
@@ -207,7 +207,7 @@ MPU6050_Status_t MPU6050_ReqGyroscope(MPU6050_data_str* DataStruct, uint32_t tim
 
 /**
  * @brief  Requests temperature data from sensor
- * @param  *DataStruct: Pointer to @ref MPU6050_data_str structure to store data to
+ * @param  DataStruct: Pointer to @ref MPU6050_data_str structure to store data to
  * @param  timestamp timestamp of the sensor data
  * @retval MPU6050_Status_t
  */
@@ -216,7 +216,7 @@ MPU6050_Status_t MPU6050_ReqTemperature(MPU6050_data_str* DataStruct, uint32_t t
 
 /**
  * @brief  Reqs accelerometer, gyroscope and temperature data from sensor
- * @param  *DataStruct Pointer to @ref MPU6050_data_str structure to store data to
+ * @param  DataStruct Pointer to @ref MPU6050_data_str structure to store data to
  * @param  timestamp Timestamp of the sensor data
  * @retval MPU6050_Status_t
  */
@@ -225,7 +225,7 @@ MPU6050_Status_t MPU6050_ReqAll(MPU6050_data_str* DataStruct, uint32_t timestamp
 
 /**
  * @brief  Get the current accelerometer data 
- * @param  *DataStruct Pointer to @ref MPU6050_data_str structure to data data from
+ * @param  DataStruct Pointer to @ref MPU6050_data_str structure to data data from
  * @param  acc Array of 3 floats 
  * @param  timestamp Pointer to timestamp variable 
  * @retval None  
@@ -234,21 +234,52 @@ void MPU6050_GetAccelerometer(MPU6050_data_str* ds, float acc[3], uint32_t* time
 
 /**
  * @brief  Get the current gyroscope data 
- * @param  *DataStruct Pointer to @ref MPU6050_data_str structure to data data from
+ * @param  DataStruct Pointer to @ref MPU6050_data_str structure to data data from
  * @param  gyro Array of 3 floats 
  * @param  timestamp Pointer to timestamp variable 
  * @retval None  
  * */
 void MPU6050_GetGyro(MPU6050_data_str* ds, float gyro[3], uint32_t* timestamp);
 
+
+/**
+ * @brief Manipulate the received data into little endian format 
+ * @param  DataStruct Pointer to @ref MPU6050_data_str structure to data data from
+ * @retval None  
+ */
 void MPU6050_UpdateAll(MPU6050_data_str* DataStruct);
 void MPU6050_UpdateAccelerometer(MPU6050_data_str* DataStruct);
 void MPU6050_UpdateGyro(MPU6050_data_str* DataStruct);
 void MPU6050_UpdateTemperature(MPU6050_data_str* DataStruct);
 
+
+/**
+ * @brief  Copy the internal data structure to the shadow copy meant for public use
+ * @param  DataStruct Pointer to @ref MPU6050_data_str structure to data data from
+ * @retval None  
+ */
+void MPU6050_Publish(MPU6050_data_str* ds);
+
+
+/**
+ * @brief  Configure the range of the accelerometers 
+ * @param  DataStruct Pointer to @ref MPU6050_data_str structure
+ * @param  AccelerometerRange Accelerometer range. 
+ * @retval MPU6050_Status_t
+ */
 MPU6050_Status_t MPU6050_SetAcceleroemeterScale(MPU6050_data_str* mpu_str, 
 		MPU6050_AccRange_t AccelerometerRange);
+
+/**
+ * @brief  Configure the range of the gyroscopes 
+ * @param  DataStruct Pointer to @ref MPU6050_data_str structure
+ * @param  GyroscopeRange Gyroscope range. 
+ * @retval MPU6050_Status_t
+ */
+MPU6050_Status_t MPU6050_SetGyroScale(MPU6050_data_str* mpu_str, 
+		MPU6050_GyroRange_t GyroscopeRange);
 
 
 
 #endif
+
