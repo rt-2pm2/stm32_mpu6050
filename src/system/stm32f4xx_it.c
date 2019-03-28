@@ -230,8 +230,7 @@ void EXTI4_IRQHandler(void) {
   * @param  None
   * @retval None
   */
-void TIM2_IRQHandler(void)
-{
+void TIM2_IRQHandler(void) {
   HAL_TIM_IRQHandler(&TimHandle);
 }
 
