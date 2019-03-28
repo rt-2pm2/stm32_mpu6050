@@ -259,15 +259,21 @@ MPU6050_Status_t MPU6050_ReqGyroscope(MPU6050_data_str* ds) {
 }
 
 void MPU6050_UpdateAccelerometer(MPU6050_data_str* ds) {
-	ds->Acc_X = ((uint16_t)(ds->mem.Acc_X & 0x00FF) << 8) | (uint16_t)(ds->mem.Acc_X >> 8);
-	ds->Acc_Y = ((uint16_t)(ds->mem.Acc_Y & 0x00FF) << 8) | (uint16_t)(ds->mem.Acc_Y >> 8);
-	ds->Acc_Z = ((uint16_t)(ds->mem.Acc_Z & 0x00FF) << 8) | (uint16_t)(ds->mem.Acc_Z >> 8);
+	ds->priv_data.Acc_X = 
+		((uint16_t)(ds->mem.Acc_X & 0x00FF) << 8) | (uint16_t)(ds->mem.Acc_X >> 8);
+	ds->priv_data.Acc_Y = 
+		((uint16_t)(ds->mem.Acc_Y & 0x00FF) << 8) | (uint16_t)(ds->mem.Acc_Y >> 8);
+	ds->priv_data.Acc_Z = 
+		((uint16_t)(ds->mem.Acc_Z & 0x00FF) << 8) | (uint16_t)(ds->mem.Acc_Z >> 8);
 }
 		
 void MPU6050_UpdateGyroscope(MPU6050_data_str* ds) {
-	ds->Gyro_X = ((uint16_t)(ds->mem.Gyro_X & 0x00FF) << 8) | (uint16_t)(ds->mem.Gyro_X >> 8);
-	ds->Gyro_Y = ((uint16_t)(ds->mem.Gyro_Y & 0x00FF) << 8) | (uint16_t)(ds->mem.Gyro_Y >> 8);
-	ds->Gyro_Z = ((uint16_t)(ds->mem.Gyro_Z & 0x00FF) << 8) | (uint16_t)(ds->mem.Gyro_Z >> 8);
+	ds->priv_data.Gyro_X = 
+		((uint16_t)(ds->mem.Gyro_X & 0x00FF) << 8) | (uint16_t)(ds->mem.Gyro_X >> 8);
+	ds->priv_data.Gyro_Y = 
+		((uint16_t)(ds->mem.Gyro_Y & 0x00FF) << 8) | (uint16_t)(ds->mem.Gyro_Y >> 8);
+	ds->priv_data.Gyro_Z = 
+		((uint16_t)(ds->mem.Gyro_Z & 0x00FF) << 8) | (uint16_t)(ds->mem.Gyro_Z >> 8);
 }
 
 
@@ -285,8 +291,8 @@ MPU6050_Status_t MPU6050_ReqTemperature(MPU6050_data_str* ds) {
 
 void MPU6050_UpdateTemperature(MPU6050_data_str* ds) {
 
-	ds->Temperature = ((uint16_t)(ds->mem.Temperature & 0x00FF) << 8) | 
-			(uint16_t)(ds->mem.Temperature >> 8);
+	ds->priv_data.Temp = ((uint16_t)(ds->mem.Temp & 0x00FF) << 8) | 
+			(uint16_t)(ds->mem.Temp >> 8);
 }
 
 
@@ -294,7 +300,7 @@ MPU6050_Status_t MPU6050_ReqAll(MPU6050_data_str* ds, uint32_t timestamp) {
 	//MPU6050_Status_t ret;
 	HAL_StatusTypeDef halStatus;
 
-	ds->timestamp = timestamp;
+	ds->priv_data.timestamp = timestamp;
 
 	halStatus = MPU6050_Read(MPU6050_I2C_ADDR, MPU6050_ACCEL_XOUT_H,
 		(uint8_t*) &ds->mem, sizeof(MPU6050_mem));
@@ -305,32 +311,48 @@ MPU6050_Status_t MPU6050_ReqAll(MPU6050_data_str* ds, uint32_t timestamp) {
 		return MPU6050_ConnectionError;
 }
 
+
+void MPU6050_Publish(MPU6050_data_str* ds) {
+	memcpy(&ds->sensor_data, &ds->priv_data, sizeof(IMU_Data));
+}
+
 void MPU6050_UpdateAll(MPU6050_data_str* ds) {
+
+	// Fix the byte order of the IMU data
 	//	      Move the lower part (H) up    |  Move the upper part (L) down
-	ds->Acc_X = ((uint16_t)(ds->mem.Acc_X & 0x00FF) << 8) | (uint16_t)(ds->mem.Acc_X >> 8);
-	ds->Acc_Y = ((uint16_t)(ds->mem.Acc_Y  & 0x00FF) << 8) | (uint16_t)(ds->mem.Acc_Y >> 8);
-	ds->Acc_Z = ((uint16_t)(ds->mem.Acc_Z  & 0x00FF) << 8) | (uint16_t)(ds->mem.Acc_Z >> 8);
+	ds->priv_data.Acc_X = 
+		((uint16_t)(ds->mem.Acc_X & 0x00FF) << 8) | (uint16_t)(ds->mem.Acc_X >> 8);
+	ds->priv_data.Acc_Y = 
+		((uint16_t)(ds->mem.Acc_Y  & 0x00FF) << 8) | (uint16_t)(ds->mem.Acc_Y >> 8);
+	ds->priv_data.Acc_Z = 
+		((uint16_t)(ds->mem.Acc_Z  & 0x00FF) << 8) | (uint16_t)(ds->mem.Acc_Z >> 8);
 
-	ds->Gyro_X = ((uint16_t)(ds->mem.Gyro_X & 0x00FF) << 8) | (uint16_t)(ds->mem.Gyro_X >> 8);
-	ds->Gyro_Y = ((uint16_t)(ds->mem.Gyro_Y & 0x00FF) << 8) | (uint16_t)(ds->mem.Gyro_Y >> 8);
-	ds->Gyro_Z = ((uint16_t)(ds->mem.Gyro_Z & 0x00FF) << 8) | (uint16_t)(ds->mem.Gyro_Z >> 8);
+	ds->priv_data.Gyro_X = 
+		((uint16_t)(ds->mem.Gyro_X & 0x00FF) << 8) | (uint16_t)(ds->mem.Gyro_X >> 8);
+	ds->priv_data.Gyro_Y = 
+		((uint16_t)(ds->mem.Gyro_Y & 0x00FF) << 8) | (uint16_t)(ds->mem.Gyro_Y >> 8);
+	ds->priv_data.Gyro_Z = 
+		((uint16_t)(ds->mem.Gyro_Z & 0x00FF) << 8) | (uint16_t)(ds->mem.Gyro_Z >> 8);
 
-	ds->Temperature = ((uint16_t)(ds->mem.Temperature & 0x00FF) << 8) | (uint16_t)(ds->mem.Temperature >> 8);
+	ds->priv_data.Temp = 
+		((uint16_t)(ds->mem.Temp & 0x00FF) << 8) | (uint16_t)(ds->mem.Temp >> 8);
+
 }
 
 
-void MPU6050_GetAccelerometer(MPU6050_data_str* ds, float acc[3]) {
-	acc[0] = toReal(ds->Acc_X, ds->Acc_scale);
-	acc[1] = toReal(ds->Acc_Y, ds->Acc_scale);
-	acc[2] = toReal(ds->Acc_Z, ds->Acc_scale);
+void MPU6050_GetAccelerometer(MPU6050_data_str* ds, float acc[3], uint32_t* timestamp) {
+	acc[0] = toReal(ds->sensor_data.Acc_X, ds->Acc_scale);
+	acc[1] = toReal(ds->sensor_data.Acc_Y, ds->Acc_scale);
+	acc[2] = toReal(ds->sensor_data.Acc_Z, ds->Acc_scale);
 
+	*timestamp = ds->sensor_data.timestamp;
 	return;
 }
 
-void MPU6050_GetGyro(MPU6050_data_str* ds, float gyro[3]) {
-	gyro[0] = toReal(ds->Gyro_X, ds->Gyro_scale);
-	gyro[1] = toReal(ds->Gyro_Y, ds->Gyro_scale);
-	gyro[2] = toReal(ds->Gyro_Z, ds->Gyro_scale);
+void MPU6050_GetGyro(MPU6050_data_str* ds, float gyro[3], uint32_t* timestamp) {
+	gyro[0] = toReal(ds->sensor_data.Gyro_X, ds->Gyro_scale);
+	gyro[1] = toReal(ds->sensor_data.Gyro_Y, ds->Gyro_scale);
+	gyro[2] = toReal(ds->sensor_data.Gyro_Z, ds->Gyro_scale);
 
 	return;
 }
