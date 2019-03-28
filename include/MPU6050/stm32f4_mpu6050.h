@@ -21,7 +21,7 @@
  ----------------------------------------------------------------------
  */
 #ifndef MPU6050_H
-#define MPU6050_H 100
+#define MPU6050_H
 
 //#include "stm32f4xx.h"
 
@@ -127,17 +127,33 @@ typedef enum {
 
 
 /**
- * @brief Structure of the IMU internal memory for the sensors 
+ * @brief Structure representing the IMU internal memory containing
+ * sensors data
  */
 typedef struct {
 	uint16_t Acc_X;		/*!< Accelerometer value X axis */
 	uint16_t Acc_Y;		/*!< Accelerometer value Y axis */
 	uint16_t Acc_Z;		/*!< Accelerometer value Z axis */	
-	uint16_t Temperature;	/*!< Temperature in degrees */
-	uint16_t Gyro_X;		/*!< Gyroscope value X axis */
-	uint16_t Gyro_Y;		/*!< Gyroscope value Y axis */
-	uint16_t Gyro_Z;		/*!< Gyroscope value Z axis */
+	uint16_t Temp;		/*!< Temperature in degrees */
+	uint16_t Gyro_X;	/*!< Gyroscope value X axis */
+	uint16_t Gyro_Y;	/*!< Gyroscope value Y axis */
+	uint16_t Gyro_Z;	/*!< Gyroscope value Z axis */
 } MPU6050_mem;
+
+
+/**
+ * @brief Structure representing sensors data
+ */
+typedef struct {
+	uint32_t timestamp;
+	int16_t Acc_X;		/*!< Accelerometer value X axis */
+	int16_t Acc_Y;		/*!< Accelerometer value Y axis */
+	int16_t Acc_Z;		/*!< Accelerometer value Z axis */
+	int16_t Gyro_X;		/*!< Gyroscope value X axis */
+	int16_t Gyro_Y;		/*!< Gyroscope value Y axis */
+	int16_t Gyro_Z;		/*!< Gyroscope value Z axis */
+	int16_t Temp;		/*!< Temperature in degrees */
+} IMU_Data;
 
 /**
  * @brief  Main MPU6050 structure
@@ -147,27 +163,19 @@ typedef struct {
 	I2C_HandleTypeDef* I2cHandle;
 
 	uint8_t Address;	/*!< I2C address of device */
-	float Gyro_2Real;	/*!< Gyroscope corrector from raw data to "deg/s". */
-	float Acce_2Real;	/*!< Accelerometer corrector from raw data to "g". */
+	float Gyro_2Real;	/*!< Gyroscope corrector from raw data to "deg/s" */
+	float Acce_2Real;	/*!< Accelerometer corrector from raw data to "g" */
 
-	float Acc_scale;	/*!< Accelerometer full scale [g]. */
-	float Gyro_scale;	/*!< Gyroscope full scale [deg/s]. */
+	float Acc_scale;	/*!< Accelerometer full scale [g] */
+	float Gyro_scale;	/*!< Gyroscope full scale [deg/s] */
+
+	// DATA
+	MPU6050_mem mem;	/*!< Data represented as in the IMU memory */	
+
+	IMU_Data priv_data;	/*!< Private sensor data */
 
 	/* Public */
-	int16_t Acc_X;		/*!< Accelerometer value X axis */
-	int16_t Acc_Y;		/*!< Accelerometer value Y axis */
-	int16_t Acc_Z;		/*!< Accelerometer value Z axis */
-	int16_t Gyro_X;		/*!< Gyroscope value X axis */
-	int16_t Gyro_Y;		/*!< Gyroscope value Y axis */
-	int16_t Gyro_Z;		/*!< Gyroscope value Z axis */
-	int16_t Temperature;	/*!< Temperature in degrees */
-
-	MPU6050_mem mem;
-
-	float Gyro[3];
-	float Acc[3];
-
-	uint32_t timestamp;
+	IMU_Data sensor_data;	/*!< Public sensor data */
 
 } MPU6050_data_str;
 
@@ -182,17 +190,9 @@ typedef struct {
 /**
  * @brief  Initializes MPU6050 and I2C peripheral
  * @param  *DataStruct: Pointer to empty @ref MPU6050_data_str structure
- * @param   DeviceNumber: MPU6050 has one pin, AD0 which can be used to set address of device.
- *          This feature allows you to use 2 different sensors on the same board with same library.
- *          If you set AD0 pin to low, then this parameter should be MPU6050_Device_0,
- *          but if AD0 pin is high, then you should use MPU6050_Device_1
- *          
- *          Parameter can be a value of @ref MPU6050_Device_t enumeration
- * @param  AccelerometerSensitivity: Set accelerometer sensitivity. This parameter can be a value of @ref MPU6050_Accelerometer_t enumeration
- * @param  GyroscopeSensitivity: Set gyroscope sensitivity. This parameter can be a value of @ref MPU6050_Gyroscope_t enumeration
- * @retval Status:
- *            - MPU6050_Status_t: Everything OK
- *            - Other member: in other cases
+ * @param  AccelerometerSensitivity: Set accelerometer sensitivity. 
+ * @param  GyroscopeSensitivity: Set gyroscope sensitivity.
+ * @retval MPU6050_Status_t
  */
 MPU6050_Status_t MPU6050_Init(MPU6050_data_str* data_str,
 		MPU6050_AccRange_t AccelerometerRange, 
@@ -201,55 +201,54 @@ MPU6050_Status_t MPU6050_Init(MPU6050_data_str* data_str,
 /**
  * @brief  Requests accelerometer data from sensor
  * @param  *DataStruct: Pointer to @ref MPU6050_data_str structure to store data to
- * @retval Member of @ref MPU6050_Status_t:
- *            - MPU6050_Result_Ok: everything is OK
- *            - Other: in other cases
+ * @retval MPU6050_Status_t
  */
 MPU6050_Status_t MPU6050_ReqAccelerometer(MPU6050_data_str* DataStruct);
 
 /**
  * @brief  Requests gyroscope data from sensor
  * @param  *DataStruct: Pointer to @ref MPU6050_data_str structure to store data to
- * @retval Member of @ref MPU6050_Status_t:
- *            - MPU6050_Result_Ok: everything is OK
- *            - Other: in other cases
+ * @param  timestamp timestamp of the sensor data
+ * @retval MPU6050_Status_t
  */
-MPU6050_Status_t MPU6050_ReqGyroscope(MPU6050_data_str* DataStruct);
+MPU6050_Status_t MPU6050_ReqGyroscope(MPU6050_data_str* DataStruct, uint32_t timestamp);
+
 
 /**
  * @brief  Requests temperature data from sensor
  * @param  *DataStruct: Pointer to @ref MPU6050_data_str structure to store data to
- * @retval Member of @ref MPU6050_Status_t:
- *            - MPU6050_Result_Ok: everything is OK
- *            - Other: in other cases
+ * @param  timestamp timestamp of the sensor data
+ * @retval MPU6050_Status_t
  */
-MPU6050_Status_t MPU6050_ReqTemperature(MPU6050_data_str* DataStruct);
+MPU6050_Status_t MPU6050_ReqTemperature(MPU6050_data_str* DataStruct, uint32_t timestamp);
+
 
 /**
  * @brief  Reqs accelerometer, gyroscope and temperature data from sensor
- * @param  *DataStruct: Pointer to @ref MPU6050_data_str structure to store data to
- * @param  timestamp timestamp of the sensor data
- * @retval Member of @ref MPU6050_Status_t:
- *            - MPU6050_Result_Ok: everything is OK
- *            - Other: in other cases
+ * @param  *DataStruct Pointer to @ref MPU6050_data_str structure to store data to
+ * @param  timestamp Timestamp of the sensor data
+ * @retval MPU6050_Status_t
  */
 MPU6050_Status_t MPU6050_ReqAll(MPU6050_data_str* DataStruct, uint32_t timestamp);
 
+
 /**
  * @brief  Get the current accelerometer data 
- * @param  *DataStruct: Pointer to @ref MPU6050_data_str structure to data data from
- * @param  acc: Array of 3 floats 
+ * @param  *DataStruct Pointer to @ref MPU6050_data_str structure to data data from
+ * @param  acc Array of 3 floats 
+ * @param  timestamp Pointer to timestamp variable 
  * @retval None  
  * */
-void MPU6050_GetAccelerometer(MPU6050_data_str* ds, float acc[3]);
+void MPU6050_GetAccelerometer(MPU6050_data_str* ds, float acc[3], uint32_t* timestamp);
 
 /**
  * @brief  Get the current gyroscope data 
  * @param  *DataStruct: Pointer to @ref MPU6050_data_str structure to data data from
  * @param  gyro: Array of 3 floats 
+ * @param  *timestamp pointer to timestamp variable 
  * @retval None  
  * */
-void MPU6050_GetGyro(MPU6050_data_str* ds, float gyro[3]);
+void MPU6050_GetGyro(MPU6050_data_str* ds, float gyro[3], uint32_t* timestamp);
 
 void MPU6050_UpdateAll(MPU6050_data_str* DataStruct);
 void MPU6050_UpdateAccelerometer(MPU6050_data_str* DataStruct);
