@@ -89,15 +89,6 @@
 #define MPU6050_CLOCK_PLL_ZGYRO (3)
 
 /**
- * @brief  MPU6050 can have 2 different slave addresses, depends on it's input AD0 pin
- *         This feature allows you to use 2 different sensors with this library at the same time
- */
-typedef enum {
-	MPU6050_Device_0 = 0,   /*!< AD0 pin is set to low */
-	MPU6050_Device_1 = 0x02 /*!< AD0 pin is set to high */
-} MPU6050_Device_t;
-
-/**
  * @brief  MPU6050 result enumeration	
  */
 typedef enum {
@@ -243,9 +234,9 @@ void MPU6050_GetAccelerometer(MPU6050_data_str* ds, float acc[3], uint32_t* time
 
 /**
  * @brief  Get the current gyroscope data 
- * @param  *DataStruct: Pointer to @ref MPU6050_data_str structure to data data from
- * @param  gyro: Array of 3 floats 
- * @param  *timestamp pointer to timestamp variable 
+ * @param  *DataStruct Pointer to @ref MPU6050_data_str structure to data data from
+ * @param  gyro Array of 3 floats 
+ * @param  timestamp Pointer to timestamp variable 
  * @retval None  
  * */
 void MPU6050_GetGyro(MPU6050_data_str* ds, float gyro[3], uint32_t* timestamp);
