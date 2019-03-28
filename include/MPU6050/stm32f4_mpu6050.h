@@ -167,6 +167,8 @@ typedef struct {
 	float Gyro[3];
 	float Acc[3];
 
+	uint32_t timestamp;
+
 } MPU6050_data_str;
 
 
@@ -226,11 +228,12 @@ MPU6050_Status_t MPU6050_ReqTemperature(MPU6050_data_str* DataStruct);
 /**
  * @brief  Reqs accelerometer, gyroscope and temperature data from sensor
  * @param  *DataStruct: Pointer to @ref MPU6050_data_str structure to store data to
+ * @param  timestamp timestamp of the sensor data
  * @retval Member of @ref MPU6050_Status_t:
  *            - MPU6050_Result_Ok: everything is OK
  *            - Other: in other cases
  */
-MPU6050_Status_t MPU6050_ReqAll(MPU6050_data_str* DataStruct);
+MPU6050_Status_t MPU6050_ReqAll(MPU6050_data_str* DataStruct, uint32_t timestamp);
 
 /**
  * @brief  Get the current accelerometer data 

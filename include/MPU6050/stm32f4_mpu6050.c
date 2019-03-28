@@ -290,9 +290,11 @@ void MPU6050_UpdateTemperature(MPU6050_data_str* ds) {
 }
 
 
-MPU6050_Status_t MPU6050_ReqAll(MPU6050_data_str* ds) {
+MPU6050_Status_t MPU6050_ReqAll(MPU6050_data_str* ds, uint32_t timestamp) {
 	//MPU6050_Status_t ret;
 	HAL_StatusTypeDef halStatus;
+
+	ds->timestamp = timestamp;
 
 	halStatus = MPU6050_Read(MPU6050_I2C_ADDR, MPU6050_ACCEL_XOUT_H,
 		(uint8_t*) &ds->mem, sizeof(MPU6050_mem));
