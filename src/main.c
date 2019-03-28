@@ -80,9 +80,8 @@ int float2buff(float x, char buffer[], int MaxBuffSize, int Nint, int Ndec) {
 
 int main() {
 
-	char data_buff[20];
-
-	HAL_StatusTypeDef halStatus, tr_status;
+	HAL_StatusTypeDef halStatus;
+	MPU6050_Status_t mpu_status;
 	/* STM32F4xx HAL library initialization:
 	   - Configure the Flash prefetch, instruction and Data caches
 	   - Configure the Systick to generate an interrupt each 1 msec
@@ -113,28 +112,21 @@ int main() {
 
 
 	// Initialize the mpu6050
-	MPU6050_Init(&mpu_data, MPU6050_Accelerometer_2G, MPU6050_Gyroscope_250s);
+	mpu_status = MPU6050_Init(&mpu_data, MPU6050_Accelerometer_2G, MPU6050_Gyroscope_250s);
+	if (mpu_status != MPU6050_Ok) {
+		Error_Handler();
+	}
 
 	// Configure the interrupt on the mpu line
 	EXTILine4_Config();
 
-	int digs = 0;
-	uint32_t t;
 	while (1) { 
 	
 		HAL_Delay(20);
 
-		
-		t = __HAL_TIM_GetCounter(&TimHandle);
-		readflag = 0;
-		digs = float2buff(t, data_buff, 20, 8, 3);
-		readflag = 1;
-		tr_status = HAL_UART_Transmit_IT(&UartHandle, (uint8_t*)data_buff, digs);
-		
-		if (tr_status != HAL_OK) {
-			Error_Handler();
-		}
-		
+		//int digs = 0;
+		//tr_status = HAL_UART_Transmit_IT(&UartHandle, (uint8_t*)data_buff, digs);
+			
 	}
 	
 	return 0;
@@ -190,6 +182,8 @@ void HAL_I2C_MemRxCpltCallback(I2C_HandleTypeDef* hi2c) {
   */
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
 	if (GPIO_Pin == INT_MPU_PIN) {
-		MPU6050_ReqAll(&mpu_data);
+		// Take the current time
+		uint32_t time = __HAL_TIM_GetCounter(&TimHandle);
+		MPU6050_ReqAll(&mpu_data, time);
 	}
 }
