@@ -168,7 +168,7 @@ void HAL_I2C_MemRxCpltCallback(I2C_HandleTypeDef* hi2c) {
 	// Update the shared data only if the data is not
 	// currently used
 	if (readflag) {
-		void MPU6050_Publish(MPU6050_data_str* ds);
+		void MPU6050_Publish(&mpu_data);
 	}
 
 	return;	
